@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 Noēsis – Deep Research AI Agent
 
-## Getting Started
+Noēsis is an intelligent and modular **Deep Research AI Agent** built with cutting-edge technologies like **Next.js**, **Vercel AI SDK**, and powerful **LLMs (GPT-4o, Gemini, Deepseek)**. It autonomously asks clarifying questions, generates optimal search queries, retrieves the most relevant results via **Exa Search**, and compiles them into comprehensive reports.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 🔧 **Fully Customizable Research Flow**  
+  Modular pipeline that allows flexible iteration and configuration of research stages.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 🔍 **Adaptive Search Query Generation**  
+  Automatically refines and evolves search queries based on previous findings and analysis.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- ⚙️ **Seamless LLM Integration**  
+  Plug-and-play integration with top LLMs: GPT-4o, Gemini, Deepseek (via OpenRouter).
 
-## Learn More
+- ♻️ **Iterative Research Loop**  
+  Loop-based engine that performs multiple research iterations until content is sufficient for reporting.
 
-To learn more about Next.js, take a look at the following resources:
+- 💼 **Modular Components**  
+  Cleanly separated concerns for planning, querying, analysis, extraction, and reporting.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 🌐 **Built with Next.js & Vercel AI SDK**  
+  Uses the latest **App Router** architecture for clean routing and performance.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠️ Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Category        | Technology                            |
+|----------------|----------------------------------------|
+| **Framework**   | Next.js 15 (App Router)                |
+| **Styling**     | Tailwind CSS, Shadcn UI                |
+| **LLMs**        | GPT-4o, Gemini, Deepseek (via OpenRouter) |
+| **AI SDK**      | Vercel AI SDK                          |
+| **Web Search**  | Exa Search API                         |
+| **Language**    | TypeScript                             |
+| **UI Library**  | Shadcn Components                      |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧩 Architecture Overview
+
+```mermaid
+graph TD
+  A[User Input: Topic] --> B[Clarification Questions]
+  B --> C[LLM: Generate Clarifications]
+  C --> D[Planner: Generate Search Queries]
+  D --> E[Search via Exa API]
+  E --> F[Analyzer: Assess Info Sufficiency]
+  F -->|Sufficient| G[Extractor: Create Structured Summary]
+  F -->|Not Sufficient| D
+  G --> H[Reporter: Final Markdown Report]
