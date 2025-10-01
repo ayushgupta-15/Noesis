@@ -13,6 +13,7 @@ langsmith==0.1.140
 
 # Database
 psycopg2-binary>=2.9.9
+asyncpg==0.29.0
 pgvector==0.3.6
 sqlalchemy==2.0.35
 neo4j==5.26.0
