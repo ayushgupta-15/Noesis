@@ -1,9 +1,27 @@
 import { generateObject, generateText } from "ai";
 import { openrouter } from "./services";
 import { ActivityTracker, ModelCallOptions, ResearchState } from "./types";
-import { MAX_RETRY_ATTEMPTS, MODEL_FALLBACKS, RETRY_DELAY_MS } from "./constants";
+import {
+  MAX_RETRY_ATTEMPTS,
+  MODEL_CALL_TIMEOUT_MS,
+  MODEL_FALLBACKS,
+  RETRY_DELAY_MS,
+} from "./constants";
 import { delay } from "./utils";
 
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string) {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${Math.round(timeoutMs / 1000)}s.`));
+    }, timeoutMs);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeout) clearTimeout(timeout);
+  });
+}
 
 export async function callModel<T>({
     model, prompt, system, schema, activityType = "generate"
@@ -12,6 +30,7 @@ researchState: ResearchState,activityTracker: ActivityTracker ): Promise<T | str
 
   let lastError: Error | null = null;
   const models = [model, ...(MODEL_FALLBACKS[model] ?? [])];
+  const timeoutMs = MODEL_CALL_TIMEOUT_MS[activityType] ?? MODEL_CALL_TIMEOUT_MS.generate;
 
   for (const currentModel of models) {
     let attempts = 0;
@@ -20,12 +39,12 @@ researchState: ResearchState,activityTracker: ActivityTracker ): Promise<T | str
       try{
         if(schema){
 
-          const { object, usage } = await generateObject({
+          const { object, usage } = await withTimeout(generateObject({
               model: openrouter(currentModel),
               prompt,
               system,
               schema: schema
-            });
+            }), timeoutMs, `${activityType} model ${currentModel}`);
 
             researchState.tokenUsed += usage.totalTokens;
             researchState.completedSteps++
@@ -33,11 +52,11 @@ researchState: ResearchState,activityTracker: ActivityTracker ): Promise<T | str
             return object;
           }else{
 
-              const { text, usage } = await generateText({
+              const { text, usage } = await withTimeout(generateText({
                   model: openrouter(currentModel),
                   prompt,
                   system,
-                });
+                }), timeoutMs, `${activityType} model ${currentModel}`);
 
                 researchState.tokenUsed += usage.totalTokens;
             researchState.completedSteps++
