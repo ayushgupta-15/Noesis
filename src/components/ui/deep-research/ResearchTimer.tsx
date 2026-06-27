@@ -5,28 +5,28 @@ import { useDeepResearchStore } from "@/store/deepResearch"
 import { Clock, Database, FileCheck2 } from "lucide-react"
 
 function ResearchTimer() {
-  const { report, isCompleted, activities } = useDeepResearchStore()
-  const [elapsedTime, setElapsedTime] = useState(0)
+  const { report, activities } = useDeepResearchStore()
+  const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
-    // Reset elapsed time when activities are reset
-    if (activities.length <= 0) {
-      setElapsedTime(0);
-      return;
-    }
-    
+    if (activities.length <= 0) return;
     if (report.length > 10) return;
     
-    const startTime = Date.now()
     const timer = setInterval(() => {
-      setElapsedTime(Date.now() - startTime)
+      setNow(Date.now())
     }, 16)
 
     return () => clearInterval(timer)
-  }, [report, isCompleted, activities])
+  }, [report, activities.length])
 
   if (activities.length <= 0) return null
 
+  const firstActivityTime = activities[0]?.timestamp ?? now
+  const lastActivityTime = activities[activities.length - 1]?.timestamp ?? now
+  const elapsedTime =
+    report.length > 10
+      ? Math.max(0, lastActivityTime - firstActivityTime)
+      : Math.max(0, now - firstActivityTime)
   const seconds = Math.floor(elapsedTime / 1000)
   const milliseconds = elapsedTime % 1000
 

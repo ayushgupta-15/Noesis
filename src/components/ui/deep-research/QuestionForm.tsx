@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "../textarea";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,23 +22,11 @@ const QuestionForm = () => {
   const question = questions[currentQuestion];
   const savedAnswer = answers[currentQuestion] || "";
   const optionValues = useMemo(() => question?.options ?? [], [question]);
-  const savedIsOption = optionValues.includes(savedAnswer);
-  const [selectedValue, setSelectedValue] = useState(
-    savedIsOption ? savedAnswer : savedAnswer ? CUSTOM_VALUE : ""
-  );
-  const [customAnswer, setCustomAnswer] = useState(savedIsOption ? "" : savedAnswer);
-
-  useEffect(() => {
-    const nextQuestion = questions[currentQuestion];
-    const nextSavedAnswer = answers[currentQuestion] || "";
-    const nextOptions = nextQuestion?.options ?? [];
-    const nextSavedIsOption = nextOptions.includes(nextSavedAnswer);
-
-    setSelectedValue(
-      nextSavedIsOption ? nextSavedAnswer : nextSavedAnswer ? CUSTOM_VALUE : ""
-    );
-    setCustomAnswer(nextSavedIsOption ? "" : nextSavedAnswer);
-  }, [answers, currentQuestion, questions]);
+  const [draftAnswers, setDraftAnswers] = useState<Record<number, string>>({});
+  const draftAnswer = draftAnswers[currentQuestion] ?? savedAnswer;
+  const draftIsOption = optionValues.includes(draftAnswer);
+  const selectedValue = draftIsOption ? draftAnswer : draftAnswer ? CUSTOM_VALUE : "";
+  const customAnswer = selectedValue === CUSTOM_VALUE ? draftAnswer : "";
 
   if (isCompleted) return null;
   if (questions.length === 0 || !question) return null;
@@ -50,6 +38,13 @@ const QuestionForm = () => {
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = finalAnswer;
     setAnswers(newAnswers);
+  }
+
+  function setCurrentDraft(value: string) {
+    setDraftAnswers((currentDrafts) => ({
+      ...currentDrafts,
+      [currentQuestion]: value,
+    }));
   }
 
   function goNext() {
@@ -88,10 +83,7 @@ const QuestionForm = () => {
               <button
                 key={option}
                 type="button"
-                onClick={() => {
-                  setSelectedValue(option);
-                  setCustomAnswer("");
-                }}
+                onClick={() => setCurrentDraft(option)}
                 className={`flex items-start gap-3 rounded-md border p-3 text-left text-sm transition ${
                   isSelected
                     ? "border-[#00daf3] bg-[#00daf3]/10"
@@ -114,7 +106,7 @@ const QuestionForm = () => {
 
           <button
             type="button"
-            onClick={() => setSelectedValue(CUSTOM_VALUE)}
+            onClick={() => setCurrentDraft(customAnswer || "")}
             className={`flex items-start gap-3 rounded-md border p-3 text-left text-sm transition ${
               selectedValue === CUSTOM_VALUE
                 ? "border-[#00daf3] bg-[#00daf3]/10"
@@ -136,7 +128,7 @@ const QuestionForm = () => {
           {selectedValue === CUSTOM_VALUE && (
             <Textarea
               value={customAnswer}
-              onChange={(event) => setCustomAnswer(event.target.value)}
+              onChange={(event) => setCurrentDraft(event.target.value)}
               placeholder={question.customPlaceholder}
               className="min-h-24 resize-none rounded border-[#3b494c]/40 bg-[#0c0e12] px-3 py-2 text-sm text-[#e2e2e8] shadow-none placeholder:text-[#bac9cc]/50 focus-visible:border-[#00daf3] focus-visible:ring-[#00daf3]/30"
             />
