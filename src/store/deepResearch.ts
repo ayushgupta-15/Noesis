@@ -1,9 +1,16 @@
 import { Activity, Source } from "@/app/api/deep-research/types";
 import { create } from "zustand";
 
+export interface ClarificationPrompt {
+  id: string;
+  prompt: string;
+  options: string[];
+  customPlaceholder: string;
+}
+
 interface DeepResearchState {
   topic: string;
-  questions: string[];
+  questions: ClarificationPrompt[];
   answers: string[];
   currentQuestion: number;
   isCompleted: boolean;
@@ -11,11 +18,12 @@ interface DeepResearchState {
   activities: Activity[];
   sources: Source[];
   report: string;
+  sessionId: string;
 }
 
 interface DeepResearchActions {
   setTopic: (topic: string) => void;
-  setQuestions: (questions: string[]) => void;
+  setQuestions: (questions: ClarificationPrompt[]) => void;
   setAnswers: (answers: string[]) => void;
   setCurrentQuestion: (index: number) => void;
   setIsCompleted: (isCompleted: boolean) => void;
@@ -23,6 +31,8 @@ interface DeepResearchActions {
   setActivities: (activities: Activity[]) => void,
   setSources: (sources: Source[]) => void,
   setReport: (report: string) => void,
+  setSessionId: (sessionId: string) => void,
+  reset: () => void,
 }
 
 const initialState: DeepResearchState = {
@@ -35,6 +45,7 @@ const initialState: DeepResearchState = {
   activities: [],
   sources: [],
   report: "",
+  sessionId: "",
 };
 
 export const useDeepResearchStore = create<
@@ -42,7 +53,7 @@ export const useDeepResearchStore = create<
 >((set) => ({
   ...initialState,
   setTopic: (topic: string) => set({ topic }),
-  setQuestions: (questions: string[]) => set({ questions }),
+  setQuestions: (questions: ClarificationPrompt[]) => set({ questions }),
   setAnswers: (answers: string[]) => set({ answers }),
   setCurrentQuestion: (currentQuestion: number) => set({ currentQuestion }),
   setIsCompleted: (isCompleted: boolean) => set({ isCompleted }),
@@ -50,4 +61,6 @@ export const useDeepResearchStore = create<
   setActivities: (activities: Activity[]) => set({ activities }),
   setSources: (sources: Source[]) => set({ sources }),
   setReport: (report: string) => set({ report }),
+  setSessionId: (sessionId: string) => set({ sessionId }),
+  reset: () => set(initialState),
 }));

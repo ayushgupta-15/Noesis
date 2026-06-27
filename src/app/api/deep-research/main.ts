@@ -1,8 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createActivityTracker } from "./activity-tracker";
-import { MAX_ITERATIONS } from "./constants";
+import { MAX_ITERATIONS, MIN_CONFIDENCE_TO_STOP } from "./constants";
 import { analyzeFindings, generateReport, generateSearchQueries, processSearchResults, search } from "./research-functions";
 import { ResearchState } from "./types";
+import {
+    completeResearchSession,
+    updateResearchSessionSources,
+} from "@/lib/session-store";
+
+function getSourceTitle(source: string) {
+    try {
+        return new URL(source).hostname;
+    } catch {
+        return source;
+    }
+}
 
 
 export async function deepResearch(researchState: ResearchState, dataStream: any){
@@ -13,7 +25,7 @@ export async function deepResearch(researchState: ResearchState, dataStream: any
 
     const initialQueries = await generateSearchQueries(researchState, activityTracker)
     let currentQueries = (initialQueries as any).searchQueries
-    while(currentQueries && currentQueries.length > 0 && iteration <=  MAX_ITERATIONS){
+    while(currentQueries && currentQueries.length > 0 && iteration < MAX_ITERATIONS){
         iteration++;
 
         console.log("We are running on the itration number: ", iteration);
@@ -42,21 +54,50 @@ const analysis = await analyzeFindings(
 
 console.log("Analysis: ", analysis)
 
-if((analysis as any).sufficient){
+const confidence = typeof analysis.confidence === "number" ? analysis.confidence : 0;
+
+if(analysis.sufficient || confidence >= MIN_CONFIDENCE_TO_STOP){
+    activityTracker.add(
+        "analyze",
+        "complete",
+        `Confidence gate passed at ${Math.round(confidence * 100)}%. Moving to report generation.`
+    );
     break;
 }
 
 
-        currentQueries = ((analysis as any).queries || []).filter((query:string) => !currentQueries.includes(query));
+        currentQueries = (analysis.queries || []).filter((query:string) => !currentQueries.includes(query));
     }
 
     console.log("We are outside of the loop with total iterations: ", iteration)
 
     const report = await generateReport(researchState, activityTracker);
 
+    const sources = researchState.findings.map((finding) => ({
+        url: finding.source,
+        title: getSourceTitle(finding.source),
+    }));
+
+    if (researchState.sessionId) {
+        await updateResearchSessionSources(researchState.sessionId, sources);
+        await completeResearchSession(researchState.sessionId, {
+            reportText: typeof report === "string" ? report : String(report),
+            sources,
+            activities: researchState.activities ?? [],
+        });
+    }
+
     dataStream.writeData({
         type: "report",
         content: report
+    })
+
+    dataStream.writeData({
+        type: "session",
+        content: {
+            id: researchState.sessionId,
+            status: "completed",
+        }
     })
 
     return initialQueries;

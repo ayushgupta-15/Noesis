@@ -7,6 +7,7 @@ import {
     AccordionItem,
     AccordionTrigger,
   } from "@/components/ui/accordion"
+import { CheckCircle2 } from 'lucide-react';
 
 const CompletedQuestions = () => {
     const {questions, answers, isCompleted} = useDeepResearchStore();
@@ -14,23 +15,26 @@ const CompletedQuestions = () => {
     // Safety check: ensure questions is an array
     if(!isCompleted || !Array.isArray(questions) || questions.length === 0) return null;
     return (
-        <Accordion type="single" collapsible className="w-full max-w-[90vw] sm:max-w-[80vw] xl:max-w-[50vw] bg-white/60 backdrop-blur-sm border px-4 py-2 rounded-xl">
+        <Accordion type="single" collapsible className="glass-panel rounded-lg px-4">
           <AccordionItem value="item-0" className="border-0">
-            <AccordionTrigger className="text-base capitalize hover:no-underline">
-              <span>Questions and Answers</span>
+            <AccordionTrigger className="text-sm hover:no-underline">
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-[#5be9ad]" />
+                Research brief locked
+              </span>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="mx-auto py-6 space-y-8">
+              <div className="mx-auto pb-4 pt-2">
                 <Accordion type="single" collapsible className="w-full">
                   {Array.isArray(questions) && questions.map((question, index) => (
-                    <AccordionItem key={index} value={`item-${index}`}>
-                      <AccordionTrigger className="text-left hover:no-underline">
-                        <span className="text-black/70">
-                          Question {index + 1}: {question}
+                    <AccordionItem key={index} value={`item-${index}`} className="border-[#3b494c]/40">
+                      <AccordionTrigger className="text-left text-sm hover:no-underline">
+                        <span className="text-[#e2e2e8]">
+                          {question.prompt}
                         </span>
                       </AccordionTrigger>
-                      <AccordionContent className="bg-muted/50 p-4 rounded-md">
-                        <p className="text-muted-foreground">{Array.isArray(answers) ? answers[index] : ''}</p>
+                      <AccordionContent className="rounded bg-[#1a1c20] p-3">
+                        <p className="text-sm text-[#bac9cc]">{Array.isArray(answers) ? answers[index] : ''}</p>
                       </AccordionContent>
                     </AccordionItem>
                   ))}

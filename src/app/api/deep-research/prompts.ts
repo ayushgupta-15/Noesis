@@ -53,6 +53,7 @@ Your judgment should be PRACTICAL. If the report would be useful and informative
 If content is sufficient:
 {
   "sufficient": true,
+  "confidence": 0.85,
   "gaps": ["List any minor gaps that exist"],
   "queries": []
 }
@@ -60,9 +61,12 @@ If content is sufficient:
 If not sufficient:
 {
   "sufficient": false,
+  "confidence": 0.45,
   "gaps": ["List specific missing information"],
   "queries": ["1-3 targeted search queries"]
 }
+
+Confidence should be a number from 0 to 1 representing how ready the collected findings are for a strong final report.
 
 On the final iteration (${MAX_ITERATIONS - 1} or later), mark as sufficient unless key information is still missing.
 `;
@@ -93,26 +97,6 @@ Research State:
 - Iteration: ${currentIteration} / ${maxIterations}
 - Collected findings: ${findingsLength}
 - Current content length: ${contentText.length} characters
-`;
-
-// ---------- Planning ----------
-export const PLANNING_SYSTEM_PROMPT = `
-You are a senior project manager overseeing a research project.
-
-Your task is to generate the best possible search queries based on the given topic and clarifications. These queries should help gather relevant, high-quality information for a comprehensive report.
-
-Generate diverse, focused search queries that:
-- Cover different aspects of the topic
-- Target technical, practical, and contextual information
-
-Think critically and strategically.
-`;
-
-export const getPlanningPrompt = (topic: string, clarificationsText: string) => `
-Topic: <topic>${topic}</topic>
-
-Clarifications:
-<clarifications>${clarificationsText}</clarifications>
 `;
 
 // ---------- Report ----------

@@ -1,6 +1,6 @@
 "use client";
 import { useDeepResearchStore } from "@/store/deepResearch";
-import React, { ComponentPropsWithRef } from "react";
+import React, { ComponentPropsWithRef, useEffect, useRef } from "react";
 import { Card } from "../card";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -9,19 +9,23 @@ import {
   SyntaxHighlighterProps,
 } from "react-syntax-highlighter";
 import { nightOwl } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Download } from "lucide-react";
+import { Download, ExternalLink, FileText } from "lucide-react";
 import { Button } from "../button";
+import Link from "next/link";
 
 type CodeProps = ComponentPropsWithRef<"code"> & {
   inline?: boolean;
 };
 
 const ResearchReport = () => {
-  const { report, isCompleted, isLoading, topic } = useDeepResearchStore();
+  const { report, isCompleted, isLoading, topic, sessionId } = useDeepResearchStore();
+  const reportRef = useRef<HTMLDivElement | null>(null);
+  const reportContent = report.includes("<report>")
+    ? report.split("<report>")[1]?.split("</report>")[0] ?? report
+    : report;
 
   const handleMarkdownDownload = () => {
-    const content = report.split("<report>")[1].split("</report>")[0];
-    const blob = new Blob([content], { type: "text/markdown" });
+    const blob = new Blob([reportContent], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -32,14 +36,23 @@ const ResearchReport = () => {
     URL.revokeObjectURL(url);
   };
 
+  useEffect(() => {
+    if (!report) return;
+
+    reportRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [report]);
+
   if (!isCompleted) return null;
 
   if (report.length <= 0 && isLoading) {
     return (
-      <Card className="p-4 max-w-[50vw] bg-white/60 border px-4 py-2 rounded-xl">
+      <Card className="glass-panel rounded-lg p-4">
         <div className="flex flex-col items-center justify-center space-y-4 p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p className="text-sm text-muted-foreground">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[#00daf3]"></div>
+          <p className="text-sm text-[#bac9cc]">
             Researching your topic...
           </p>
         </div>
@@ -51,21 +64,41 @@ const ResearchReport = () => {
 
   return (
     <Card
-      className="max-w-[90vw] xl:max-w-[60vw] relative px-4 py-6 rounded-xl border-black/10 border-solid shadow-none p-6
-     bg-white/60 backdrop-blur-xl border antialiased
-    "
+      id="research-report"
+      ref={reportRef}
+      className="glass-panel overflow-hidden rounded-lg"
     >
-      <div className="flex justify-end gap-2 mb-4 absolute top-4 right-4">
-        <Button
-          size="sm"
-          className="flex items-center gap-2 rounded"
-          onClick={handleMarkdownDownload}
-        >
-          <Download className="w-4 h-4" /> Download
-        </Button>
+      <div className="flex flex-col gap-4 border-b border-[#3b494c]/40 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded bg-[#c3f5ff] text-[#00363d]">
+            <FileText className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="font-serif text-xl font-semibold text-[#e2e2e8]">Research report</h2>
+            <p className="text-sm text-[#bac9cc]">{topic}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {sessionId && (
+            <Button asChild size="sm" variant="outline" className="rounded-md">
+              <Link href={`/report/${sessionId}`}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Open saved
+              </Link>
+            </Button>
+          )}
+          <Button
+            size="sm"
+            className="rounded bg-[#c3f5ff] font-mono text-xs font-bold text-[#00363d] hover:brightness-110"
+            onClick={handleMarkdownDownload}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Markdown
+          </Button>
+        </div>
       </div>
 
-      <div className="prose prose-sm md:prose-base max-w-none prose-pre:p-2 overflow-x-scroll">
+      <div className="prose prose-invert max-w-none overflow-x-auto p-6 text-[16px] leading-7 prose-headings:font-serif prose-headings:text-[#e2e2e8] prose-h2:border-b prose-h2:border-[#3b494c]/40 prose-h2:pb-2 prose-h2:text-[#c3f5ff] prose-p:text-[#bac9cc] prose-li:text-[#bac9cc] prose-pre:p-2">
         <Markdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -92,7 +125,7 @@ const ResearchReport = () => {
             },
           }}
         >
-          {report.split("<report>")[1].split("</report>")[0]}
+          {reportContent}
         </Markdown>
       </div>
     </Card>

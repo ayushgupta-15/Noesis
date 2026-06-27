@@ -11,8 +11,10 @@ export interface ResearchState {
     completedSteps: number,
     tokenUsed: number,
     findings: ResearchFindings[],
-    processedUrl: Set<string>,
-    clerificationsText: string
+    processedUrls: Set<string>,
+    clarificationsText: string,
+    sessionId?: string,
+    activities?: Activity[]
 }
 
 export interface ModelCallOptions<T>{
@@ -34,6 +36,8 @@ export interface Activity{
     status: 'pending' | 'complete' | 'warning' | 'error';
     message: string;
     timestamp?: number;
+    completedSteps?: number;
+    tokenUsed?: number;
 }
 
 export type ActivityTracker = {
@@ -44,4 +48,11 @@ export type ActivityTracker = {
 export interface Source {
     url: string;
     title: string
+}
+
+export interface AnalysisResult {
+    sufficient: boolean;
+    confidence: number;
+    gaps: string[];
+    queries: string[];
 }
