@@ -6,11 +6,24 @@
   <p><strong>AI-powered Deep Research Workspace that plans, searches, verifies, and generates citation-backed reports with a transparent research pipeline.</strong></p>
 
   <p>
-    <a href="#">Live Demo</a> •
-    <a href="#architecture">Architecture</a> •
-    <a href="#local-setup">Documentation</a> •
-    <a href="#">Report Example</a> •
-    <a href="#">Portfolio</a>
+    <a href="https://noesis-pearl.vercel.app">🌐 Live Demo</a> •
+    <a href="#product-screenshots">📸 Screenshots</a> •
+    <a href="#architecture">🏗 Architecture</a> •
+    <a href="#local-setup">📖 Documentation</a>
+  </p>
+
+  <p>
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" />
+    <img src="https://img.shields.io/badge/Next.js-15-black?logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/TypeScript-100%25-blue?logo=typescript" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel" alt="Vercel" />
+    <img src="https://img.shields.io/github/last-commit/ayushgupta-15/Noesis" alt="Last Commit" />
+  </p>
+
+  <br/>
+  
+  <p align="center">
+    <img src="./public/demo.gif" width="900" alt="Noēsis Demo" />
   </p>
 </div>
 
@@ -33,17 +46,12 @@ Every research session is fully auditable.
 
 ## ✨ Features
 
-- **✅ Deep Research**
-- **✅ Streaming Research Pipeline**
-- **✅ Source Ledger**
-- **✅ Markdown Export**
-- **✅ Session History**
-- **✅ Anonymous Authentication**
-- **✅ Local-first Persistence**
-- **✅ Production-ready Postgres**
-- **✅ Rate Limiting**
-- **✅ AI Model Switching**
-- **✅ Audit Trail**
+- **✅ Multi-stage AI research pipeline**
+- **✅ Streaming progress updates**
+- **✅ Citation-backed reports**
+- **✅ Persistent research history**
+- **✅ Local-first architecture**
+- **✅ Anonymous session management**
 
 ---
 
@@ -60,27 +68,19 @@ Every research session is fully auditable.
 
 ---
 
-## 📸 Product Screenshots
+<h2 id="product-screenshots">📸 Product Screenshots</h2>
 
-<div align="center">
-  <img src="./public/landing.png" alt="Landing Page" width="800" />
-  <p><em>Landing Page</em></p>
+| Landing | Workspace |
+|---------|-----------|
+| <img src="./public/landing.png" width="400"/> | <img src="./public/workspace.png" width="400"/> |
 
-  <img src="./public/workspace.png" alt="Research Workspace" width="800" />
-  <p><em>Research Workspace</em></p>
+| Pipeline | Report |
+|----------|--------|
+| <img src="./public/pipeline.png" width="400"/> | <img src="./public/report.png" width="400"/> |
 
-  <img src="./public/pipeline.png" alt="Live Pipeline" width="800" />
-  <p><em>Live Pipeline Execution</em></p>
-
-  <img src="./public/report.png" alt="Generated Report" width="800" />
-  <p><em>Generated Markdown Report</em></p>
-
-  <img src="./public/history.png" alt="Session History" width="800" />
-  <p><em>Session History</em></p>
-
-  <img src="./public/architecture.png" alt="Architecture" width="800" />
-  <p><em>System Architecture</em></p>
-</div>
+| History | Architecture |
+|---------|--------------|
+| <img src="./public/history.png" width="400"/> | <img src="./public/architecture.png" width="400"/> |
 
 ---
 
@@ -89,27 +89,13 @@ Every research session is fully auditable.
 ### 📁 Repository Structure
 
 ```text
-Noesis
-├── Frontend
-│   ├── app/
-│   │   ├── api/
-│   │   ├── workspace/
-│   │   ├── report/
-│   │   └── history/
-│   ├── components/
-│   └── store/
-├── AI Engine
-│   └── lib/ai/
-├── Research Pipeline
-│   └── api/deep-research/
-├── Persistence Layer
-│   └── lib/session-store.ts
-├── Export Service
-│   └── api/exports/
-├── Session Manager
-│   └── lib/session-owner.ts
-└── Deployment
-    └── Vercel / Neon
+src/
+ ├── app/
+ ├── components/
+ ├── lib/
+ ├── store/
+ ├── types/
+ └── utils/
 ```
 
 ### 🔄 Research Pipeline
@@ -142,27 +128,26 @@ Noesis
     Markdown Export
 ```
 
-### 🤖 AI Workflow
+### 🌐 API Architecture
 
-User submits topic
-↓
-LLM generates research plan
-↓
-Planner creates search queries
-↓
-Exa retrieves documents
-↓
-Sources deduplicated
-↓
-Coverage checked
-↓
-Missing information researched
-↓
-Report generated
-↓
-Report stored
-↓
-Markdown exported
+```text
+       Client
+          │
+          ▼
+       Next.js
+          │
+          ▼
+    Research API
+          │
+          ▼
+     OpenRouter
+          │
+          ▼
+     Exa Search
+          │
+          ▼
+      Postgres
+```
 
 ---
 
@@ -205,41 +190,47 @@ Markdown exported
 
 ---
 
-## 📊 Statistics
+## 🧠 Key Learnings
 
-- **20+ API endpoints**
-- **8 AI pipeline stages**
-- **100% TypeScript**
-- **Streaming architecture**
-- **Anonymous session management**
-- **Markdown export**
-- **Production deployment**
+- Building streaming AI interfaces
+- Managing long-running workflows
+- Architecting local-first persistence
+- Designing transparent AI systems
+- Production deployment with Vercel + Neon
 
 ---
 
-<h2 id="local-setup">💻 Local Setup</h2>
+## 📊 Statistics
 
-Install dependencies:
+- **100% TypeScript**
+- **Local-first architecture**
+- **Streaming AI pipeline**
+- **Anonymous session persistence**
+- **Markdown report export**
+- **PostgreSQL support**
+
+---
+
+<h2 id="local-setup">💻 Quick Start & Setup</h2>
+
+**1. Clone the repository**
+```bash
+git clone https://github.com/ayushgupta-15/Noesis.git
+cd Noesis
+```
+
+**2. Install dependencies**
 ```bash
 npm install
 ```
 
-Create `.env.local`:
+**3. Configure environment variables**
 ```bash
 cp .env.local.example .env.local
 ```
+Add your keys for `OPENROUTER_API_KEY` and `EXA_SEARCH_API_KEY`. `DATABASE_URL` is optional locally.
 
-Add keys:
-```env
-OPENROUTER_API_KEY=
-EXA_SEARCH_API_KEY=
-DATABASE_URL=
-BLOB_READ_WRITE_TOKEN=
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-> `DATABASE_URL` is optional locally. When empty, sessions use `.noesis/sessions.json`.
-
-Run locally:
+**4. Run the development server**
 ```bash
 npm run dev
 ```
@@ -255,6 +246,21 @@ npm run dev
 - Graph knowledge extraction
 - Voice research
 - Research sharing
+
+---
+
+## ⚖️ License
+
+MIT License
+
+---
+
+## 🙏 Acknowledgements
+
+- Vercel AI SDK
+- OpenRouter
+- Exa
+- Next.js
 
 ---
 
